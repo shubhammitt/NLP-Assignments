@@ -1,4 +1,4 @@
-from  more_itertools import unique_everseen
+from more_itertools import unique_everseen
 import re
 import sys
 import nltk
@@ -19,7 +19,6 @@ def break_text_into_sentences(text):
     sentences = nltk.sent_tokenize(text)
     return sentences
 
-
 def break_sentence_into_words(sentence):
     '''
     Args:
@@ -33,11 +32,24 @@ def break_sentence_into_words(sentence):
     '''
     words = []
     probable_words = word_tokenize(sentence)
+
     for word in probable_words:
         if len(re.findall(r'[a-z0-9]', word, re.I)) > 0:
             words.append(word)
+
     return words
 
+def word_to_num(word):
+    '''
+    '''
+    if word.startswith('0'):
+        return word
+
+    try:
+        word = str(w2n.word_to_num(word))
+    except BaseException:
+        word = word
+    return word
 
 def Q_1(text):
     '''
@@ -75,34 +87,38 @@ def Q_2(text):
         words.extend(break_sentence_into_words(sentence))
 
     for word in words:
-        if re.match('[a-z]', word, re.I) != None:
-            if re.match('[aeiou]', word, re.I) != None:
+        if re.match('[a-z]', word, re.I) is not None:
+            if re.match('[aeiou]', word, re.I) is not None:
                 num_of_vowels += 1
             else:
                 num_of_consonants += 1
 
     print("Number of Words starting with a vowel \t\t:-\t ", num_of_vowels)
-    print("Number of Words starting with a consonant \t:-\t ", num_of_consonants, '\n')
+    print(
+        "Number of Words starting with a consonant \t:-\t ",
+        num_of_consonants,
+        '\n')
 
 
 def Q_3(text):
     '''
     Question:
-    	List all the email ids in the file given as input.
+        List all the email ids in the file given as input.
     Assumptions :
-        start with a alphanum
-        only contain alphanum, !#$%&’*+-/=?^_{|}~ in prefix before @
-        prefix length is atleast 1
-        @ can be followed by only alphanum
-        only alphanum is expected before @
-        only contain alphanum in domain and dots(in suffix) and hyphen
-        atleast a dot in domain
-        does not end with dot or hyphen
-        max len of ID is 64
-        no consecutive dots in mail ID
-        no dot before @
-        Exaclty one @
-        Atleast a dot after @
+        Broke the text into sentences as done in Q1.
+		ID starts with alphanum.
+		Only contain alphanum, !#$%&’*+-/=?^_{|}~ in prefix (part before @)
+		Prefix is of length atleast 1.
+		@ can be followed by only alphanum(no special characters).
+		only alphanum is expected before @.
+		Exaclty one @.
+		Atleast a dot after @.
+		no dot before @.
+		No consecutive dots in ID
+		Max length of ID is 64
+		Ends with alphanum.
+		Duplicate IDs are not printed and counted.
+		If a ID is invalid but if its substring is a valid ID then it is chosen.
     '''
     print("\n\nQ3 : \n")
 
@@ -116,66 +132,80 @@ def Q_3(text):
                     sentence,
                     re.I) if len(id) < 65 and ".." not in id])
 
-    mail_id = list(unique_everseen(mail_id)) # remove duplicates
+    mail_id = list(unique_everseen(mail_id))  # remove duplicates
     print("Number of valid mail-IDs = ", len(mail_id), '\n')
 
     for i, id in enumerate(mail_id):
-        print(str(i + 1) + '.',id)
+        print(str(i + 1) + '.\t', id)
+
 
 def Q_4(text):
     '''
-    Print the sentences and number of sentences starting with a given word in an input file.
-    Case insensitive
+    Question:
+    	Print the sentences and number of sentences starting with a given word in an input file.
+    Assumption:
+    	Case insensitive
+    	if entered word is a sentence then we take the first word of it
+    	numerical search allowed
     '''
+    print("\n\nQ4 : \n")
+
     sentences = break_text_into_sentences(text)
     count = 0
+
     word = input("Enter a word : ")
+    word = break_sentence_into_words(word)[0]
     word = word.lower()
-    word = re.findall(r'\w+', word)[0]
+    word = word_to_num(word)
+
+    print("\nWord which will be searched in file (case-insensitive) \t=\t", word, '\n')
+
     for sentence in sentences:
-        words = re.findall(r'\w+', sentence)
-        if len(words) > 0 and words[0].lower() == word:
-            print(sentence)
+        words = break_sentence_into_words(sentence)
+        if len(words) > 0 and word_to_num(words[0].lower()) == word:
             count += 1
-    print("Number of sentences which starts with entered word \t\t=\t\t ", count)
+            print(str(count) + '.\t', sentence)
+
+    print("\nNumber of sentences which starts with entered word \"" + str(word) + "\"\t\t=\t\t ", count, '\n')
 
 
 def Q_5(text):
     '''
-    Print the sentences and number of sentences ending with a given word in an input file.
-    Case insensitive
+    Question:
+    	Print the sentences and number of sentences ending with a given word in an input file.
+    Assumption:
+    	Case insensitive
+    	if entered word is a sentence then we take the first word of it
+    	numerical search allowed
     '''
+    print("\n\nQ5 : \n")
+
     sentences = break_text_into_sentences(text)
     count = 0
+
     word = input("Enter a word : ")
+    word = break_sentence_into_words(word)[0]
     word = word.lower()
-    word = re.findall(r'\w+', word)[0]
+    word = word_to_num(word)
+
+    print("\nWord which will be searched in file (case-insensitive) \t=\t", word, '\n')
 
     for sentence in sentences:
-        words = re.findall(r'\w+', sentence)
-        if len(words) > 0 and words[-1].lower() == word:
-            print(sentence)
+        words = break_sentence_into_words(sentence)
+        if len(words) > 0 and word_to_num(words[-1].lower()) == word:
             count += 1
-    print("Number of sentences which starts with entered word \t\t=\t\t ", count)
+            print(str(count) + '.\t', sentence)
 
-
-def word_to_num(word):
-    '''
-    '''
-    if word.startswith('0'):
-        return word
-
-    try:
-        word = str(w2n.word_to_num(word))
-    except BaseException:
-        word = word
-    return word
-
+    print("\nNumber of sentences which ends with entered word \"" + str(word) + "\"\t\t=\t\t ", count, '\n')
 
 def Q_6(text):
     '''
-            Given a word and a file as input, print the count of that word and sentences containing
-            that word in the input file.
+    Question:
+    	Given a word and a file as input, print the count of that word and sentences containing
+        that word in the input file.
+    Assumptions:
+    	Numerical search allowed
+    	Case-insensitive
     '''
     sentences = break_text_into_sentences(text)
     num_of_words = num_of_sentences = 0
@@ -185,8 +215,11 @@ def Q_6(text):
     word = re.findall(r'\w+', word)[0]
     word = word_to_num(word)
 
+    print("\nWord which will be searched in file (case-insensitive) \t=\t", word, '\n')
+
     for sentence in sentences:
-        words = re.findall(r'\w+', sentence.lower())
+        words = break_sentence_into_words(sentence.lower())
+
         for i in range(len(words)):
             words[i] = word_to_num(words[i])
 
@@ -194,10 +227,10 @@ def Q_6(text):
         if w > 0:
             num_of_sentences += 1
             num_of_words += w
-            print(w, "times in the sentence --> \n" + sentence, "\n")
+            print(w, "times in the sentence --> \n" + sentence, "\n\n")
 
-    print("Total count of words = ", num_of_words)
-    print("Total count of sentences containing enetered word = ", num_of_sentences)
+    print("\n\nTotal count of words \t\t\t\t =\t ", num_of_words)
+    print("Total count of sentences containing entered word =\t ", num_of_sentences, '\n\n')
 
 
 def Q_7(text):
@@ -254,12 +287,12 @@ if __name__ == "__main__":
         print("File not found!!")
         sys.exit()
 
-    Q_1(text)
-    Q_2(text)
-    Q_3(text)
+    # Q_1(text)
+    # Q_2(text)
+    # Q_3(text)
     # Q_4(text)
     # Q_5(text)
-    # Q_6(text)
+    Q_6(text)
     # Q_7(text)
     # Q_8(text)
     # Q_9(text)
