@@ -1,6 +1,6 @@
-from more_itertools import unique_everseen
 import re
 import sys
+from more_itertools import unique_everseen
 import nltk
 from word2number import w2n
 from nltk.tokenize import word_tokenize
@@ -161,10 +161,7 @@ def Q_4(text):
     word = word.lower()
     word = word_to_num(word)
 
-    print(
-        "\nWord which will be searched in file (case-insensitive) \t=\t",
-        word,
-        '\n')
+    print("\nWord which will be searched in file (case-insensitive) \t=\t", word, '\n')
 
     for sentence in sentences:
         words = break_sentence_into_words(sentence)
@@ -219,6 +216,8 @@ def Q_6(text):
         Numerical search allowed
         Case-insensitive
     '''
+    print("\n\nQ6 : \n")
+
     sentences = break_text_into_sentences(text)
     num_of_words = num_of_sentences = 0
 
@@ -246,48 +245,72 @@ def Q_6(text):
 
     print("\n\nTotal count of words \t\t\t\t =\t ", num_of_words)
     print(
-        "Total count of sentences containing entered word =\t ",
+        "Number of sentences containing entered word =\t ",
         num_of_sentences,
         '\n\n')
 
 
 def Q_7(text):
     '''
-            Given an input file, print the questions present, if any, in that file.
+    Question:
+        Given an input file, print the questions present, if any, in that file.
     '''
+    print("\n\nQ7 : \n")
+
+    count = 0
     sentences = break_text_into_sentences(text)
     for sentence in sentences:
         if sentence.endswith('?'):
-            print(sentence)
+            count += 1
+            print(str(count) + '.\t', sentence)
+
+    print("\nNumber of questions in given file \t=\t", count, '\n\n')
 
 
 def Q_8(text):
     '''
-            List the minutes and seconds mentioned in the date present in the file given as input.
-            (For instance, for the date - Tue, 20 Apr 1993 17:51:16 GMT, the output should be 51
-            min, 16 sec)
+    Question:
+        List the minutes and seconds mentioned in the date present in the file given as input.
+        For instance, for the date - Tue, 20 Apr 1993 17:51:16 GMT, the output should be 51
+        min, 16 sec)
     '''
+    print("\n\nQ8 : \n")
+
     sentences = break_text_into_sentences(text)
+
     for sentence in sentences:
-        times = re.findall(r'\b[01]?[0-9]:[0-5][0-9]:[0-5][0-9]\b', sentence)
+
+        times = re.findall(r'\b[01][0-9]:[0-5][0-9]:[0-5][0-9]\b', sentence)
         times.extend(re.findall(r'\b2[0-3]:[0-5][0-9]:[0-5][0-9]\b', sentence))
+
         for time in times:
+
             hr, mi, se = time.split(':')
             print(time, " --> ", mi, "min", se, "sec")
+
+    print('\n\n')
 
 
 def Q_9(text):
     '''
-            List the abbreviations present in a file given as input.
+    Question:
+        List the abbreviations present in a file given as input.
+    Assumption:
+        All uppercase.
+        Atleast length 2
     '''
+    print("\n\nQ9 : \n")
+
     sentences = break_text_into_sentences(text)
     abbreviations = []
+
     for sentence in sentences:
-        # abbreviations.extend(re.findall(r'\b([A-Z]\.){2,}\b', sentence))
         abbreviations.extend(re.findall(r'\b[A-Z]{2,}\b', sentence))
 
     for i in abbreviations:
         print(i)
+
+    print('\n\n')
 
 
 if __name__ == "__main__":
@@ -305,12 +328,12 @@ if __name__ == "__main__":
         print("File not found!!")
         sys.exit()
 
-    # Q_1(text)
-    # Q_2(text)
-    # Q_3(text)
-    # Q_4(text)
-    # Q_5(text)
+    Q_1(text)
+    Q_2(text)
+    Q_3(text)
+    Q_4(text)
+    Q_5(text)
     Q_6(text)
-    # Q_7(text)
-    # Q_8(text)
-    # Q_9(text)
+    Q_7(text)
+    Q_8(text)
+    Q_9(text)
