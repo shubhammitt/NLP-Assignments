@@ -19,6 +19,7 @@ def break_text_into_sentences(text):
     sentences = nltk.sent_tokenize(text)
     return sentences
 
+
 def break_sentence_into_words(sentence):
     '''
     Args:
@@ -39,6 +40,7 @@ def break_sentence_into_words(sentence):
 
     return words
 
+
 def word_to_num(word):
     '''
     '''
@@ -50,6 +52,7 @@ def word_to_num(word):
     except BaseException:
         word = word
     return word
+
 
 def Q_1(text):
     '''
@@ -106,19 +109,19 @@ def Q_3(text):
         List all the email ids in the file given as input.
     Assumptions :
         Broke the text into sentences as done in Q1.
-		ID starts with alphanum.
-		Only contain alphanum, !#$%&’*+-/=?^_{|}~ in prefix (part before @)
-		Prefix is of length atleast 1.
-		@ can be followed by only alphanum(no special characters).
-		only alphanum is expected before @.
-		Exaclty one @.
-		Atleast a dot after @.
-		no dot before @.
-		No consecutive dots in ID
-		Max length of ID is 64
-		Ends with alphanum.
-		Duplicate IDs are not printed and counted.
-		If a ID is invalid but if its substring is a valid ID then it is chosen.
+                ID starts with alphanum.
+                Only contain alphanum, !#$%&’*+-/=?^_{|}~ in prefix (part before @)
+                Prefix is of length atleast 1.
+                @ can be followed by only alphanum(no special characters).
+                only alphanum is expected before @.
+                Exaclty one @.
+                Atleast a dot after @.
+                no dot before @.
+                No consecutive dots in ID
+                Max length of ID is 64
+                Ends with alphanum.
+                Duplicate IDs are not printed and counted.
+                If a ID is invalid but if its substring is a valid ID then it is chosen.
     '''
     print("\n\nQ3 : \n")
 
@@ -142,11 +145,11 @@ def Q_3(text):
 def Q_4(text):
     '''
     Question:
-    	Print the sentences and number of sentences starting with a given word in an input file.
+        Print the sentences and number of sentences starting with a given word in an input file.
     Assumption:
-    	Case insensitive
-    	if entered word is a sentence then we take the first word of it
-    	numerical search allowed
+        Case insensitive
+        if entered word is a sentence then we take the first word of it
+        numerical search allowed
     '''
     print("\n\nQ4 : \n")
 
@@ -158,7 +161,10 @@ def Q_4(text):
     word = word.lower()
     word = word_to_num(word)
 
-    print("\nWord which will be searched in file (case-insensitive) \t=\t", word, '\n')
+    print(
+        "\nWord which will be searched in file (case-insensitive) \t=\t",
+        word,
+        '\n')
 
     for sentence in sentences:
         words = break_sentence_into_words(sentence)
@@ -166,17 +172,18 @@ def Q_4(text):
             count += 1
             print(str(count) + '.\t', sentence)
 
-    print("\nNumber of sentences which starts with entered word \"" + str(word) + "\"\t\t=\t\t ", count, '\n')
+    print("\nNumber of sentences which starts with entered word \"" +
+          str(word) + "\"\t\t=\t\t ", count, '\n')
 
 
 def Q_5(text):
     '''
     Question:
-    	Print the sentences and number of sentences ending with a given word in an input file.
+        Print the sentences and number of sentences ending with a given word in an input file.
     Assumption:
-    	Case insensitive
-    	if entered word is a sentence then we take the first word of it
-    	numerical search allowed
+        Case insensitive
+        if entered word is a sentence then we take the first word of it
+        numerical search allowed
     '''
     print("\n\nQ5 : \n")
 
@@ -188,7 +195,10 @@ def Q_5(text):
     word = word.lower()
     word = word_to_num(word)
 
-    print("\nWord which will be searched in file (case-insensitive) \t=\t", word, '\n')
+    print(
+        "\nWord which will be searched in file (case-insensitive) \t=\t",
+        word,
+        '\n')
 
     for sentence in sentences:
         words = break_sentence_into_words(sentence)
@@ -196,16 +206,18 @@ def Q_5(text):
             count += 1
             print(str(count) + '.\t', sentence)
 
-    print("\nNumber of sentences which ends with entered word \"" + str(word) + "\"\t\t=\t\t ", count, '\n')
+    print("\nNumber of sentences which ends with entered word \"" +
+          str(word) + "\"\t\t=\t\t ", count, '\n')
+
 
 def Q_6(text):
     '''
     Question:
-    	Given a word and a file as input, print the count of that word and sentences containing
+        Given a word and a file as input, print the count of that word and sentences containing
         that word in the input file.
     Assumptions:
-    	Numerical search allowed
-    	Case-insensitive
+        Numerical search allowed
+        Case-insensitive
     '''
     sentences = break_text_into_sentences(text)
     num_of_words = num_of_sentences = 0
@@ -215,7 +227,10 @@ def Q_6(text):
     word = re.findall(r'\w+', word)[0]
     word = word_to_num(word)
 
-    print("\nWord which will be searched in file (case-insensitive) \t=\t", word, '\n')
+    print(
+        "\nWord which will be searched in file (case-insensitive) \t=\t",
+        word,
+        '\n')
 
     for sentence in sentences:
         words = break_sentence_into_words(sentence.lower())
@@ -230,7 +245,10 @@ def Q_6(text):
             print(w, "times in the sentence --> \n" + sentence, "\n\n")
 
     print("\n\nTotal count of words \t\t\t\t =\t ", num_of_words)
-    print("Total count of sentences containing entered word =\t ", num_of_sentences, '\n\n')
+    print(
+        "Total count of sentences containing entered word =\t ",
+        num_of_sentences,
+        '\n\n')
 
 
 def Q_7(text):
