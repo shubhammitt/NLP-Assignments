@@ -1,3 +1,4 @@
+from  more_itertools import unique_everseen
 import re
 import sys
 import nltk
@@ -74,49 +75,52 @@ def Q_2(text):
         words.extend(break_sentence_into_words(sentence))
 
     for word in words:
-        if re.match('[a-z]', word, re.I) is not None:
-            if re.match('[aeiou]', word, re.I) is not None:
+        if re.match('[a-z]', word, re.I) != None:
+            if re.match('[aeiou]', word, re.I) != None:
                 num_of_vowels += 1
             else:
                 num_of_consonants += 1
 
-    print("Number of Words starting with a vowel \t\t\t:-\t ", num_of_vowels)
-    print("Number of Words starting with a consonant \t\t:-\t ", num_of_consonants, '\n')
+    print("Number of Words starting with a vowel \t\t:-\t ", num_of_vowels)
+    print("Number of Words starting with a consonant \t:-\t ", num_of_consonants, '\n')
 
 
 def Q_3(text):
     '''
-    List all the email ids in the file given as input.
+    Question:
+    	List all the email ids in the file given as input.
     Assumptions :
-            start with a alphanum
-            only contain alphanum, !#$%&’*+-/=?^_{|}~ in prefix before @
-            prefix length is atleast 1
-            @ cannot be followed by dot
-            only contain alphanum in domain and dots(in suffix) and hyphen
-            atleast a dot in domain
-            ateast 1 alphanum or hyphen betweem @ and first dot
-            does not end with dot or hyphen
-            max len of ID is 64
-            no consecutive dots in mail ID
-            no dot before @
+        start with a alphanum
+        only contain alphanum, !#$%&’*+-/=?^_{|}~ in prefix before @
+        prefix length is atleast 1
+        @ can be followed by only alphanum
+        only alphanum is expected before @
+        only contain alphanum in domain and dots(in suffix) and hyphen
+        atleast a dot in domain
+        does not end with dot or hyphen
+        max len of ID is 64
+        no consecutive dots in mail ID
+        no dot before @
+        Exaclty one @
+        Atleast a dot after @
     '''
+    print("\n\nQ3 : \n")
+
     sentences = break_text_into_sentences(text)
     mail_id = []
     for sentence in sentences:
         mail_id.extend(
             [
                 id for id in re.findall(
-                    r'[a-zA-Z0-9][a-zA-Z0-9!#$%&’*+-/=?^_{|}~]*[a-zA-Z0-9]*@[a-zA-Z0-9][a-zA-Z0-9-]{0,64}\.[a-zA-Z0-9.-]{1,64}[a-zA-Z0-9]',
+                    r'\b[a-zA-Z0-9][a-zA-Z0-9!#$%&’\*\+\-/=?^_{\|}~]*[a-zA-Z0-9]*@[a-zA-Z0-9][a-zA-Z0-9-]*\.[a-zA-Z0-9\.\-]*[a-zA-Z0-9]\b',
                     sentence,
                     re.I) if len(id) < 65 and ".." not in id])
 
-    count = 0
-    mail_id = list(set(mail_id))
-    for id in mail_id:
-        print(id)
-        count += 1
-    print("Number of mail - IDs = ", count)
+    mail_id = list(unique_everseen(mail_id)) # remove duplicates
+    print("Number of valid mail-IDs = ", len(mail_id), '\n')
 
+    for i, id in enumerate(mail_id):
+        print(str(i + 1) + '.',id)
 
 def Q_4(text):
     '''
@@ -252,7 +256,7 @@ if __name__ == "__main__":
 
     Q_1(text)
     Q_2(text)
-    # Q_3(text)
+    Q_3(text)
     # Q_4(text)
     # Q_5(text)
     # Q_6(text)
