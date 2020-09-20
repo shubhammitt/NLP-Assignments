@@ -4,7 +4,7 @@ from more_itertools import unique_everseen
 import nltk
 from word2number import w2n
 from nltk.tokenize import word_tokenize
-
+from nltk.stem import WordNetLemmatizer
 
 def break_text_into_sentences(text):
     '''
@@ -33,10 +33,12 @@ def break_sentence_into_words(sentence):
     '''
     words = []
     probable_words = word_tokenize(sentence)
+    lemmatizer = WordNetLemmatizer() 
 
     for word in probable_words:
-        if len(re.findall(r'[a-z0-9]', word, re.I)) > 0:
-            words.append(word)
+        w = lemmatizer.lemmatize(word)
+        if len(re.findall(r'[a-z0-9]', w, re.I)) > 0:
+            words.append(w)
 
     return words
 
@@ -109,19 +111,19 @@ def Q_3(text):
         List all the email ids in the file given as input.
     Assumptions :
         Broke the text into sentences as done in Q1.
-                ID starts with alphanum.
-                Only contain alphanum, !#$%&’*+-/=?^_{|}~ in prefix (part before @)
-                Prefix is of length atleast 1.
-                @ can be followed by only alphanum(no special characters).
-                only alphanum is expected before @.
-                Exaclty one @.
-                Atleast a dot after @.
-                no dot before @.
-                No consecutive dots in ID
-                Max length of ID is 64
-                Ends with alphanum.
-                Duplicate IDs are not printed and counted.
-                If a ID is invalid but if its substring is a valid ID then it is chosen.
+            ID starts with alphanum.
+            Only contain alphanum, !#$%&’*+-/=?^_{|}~ in prefix (part before @)
+            Prefix is of length atleast 1.
+            @ can be followed by only alphanum(no special characters).
+            only alphanum is expected before @.
+            Exaclty one @.
+            Atleast a dot after @.
+            no dot before @.
+            No consecutive dots in ID
+            Max length of ID is 64
+            Ends with alphanum.
+            Duplicate IDs are not printed and counted.
+            If a ID is invalid but if its substring is a valid ID then it is chosen.
     '''
     print("\n\nQ3 : \n")
 
@@ -245,7 +247,7 @@ def Q_6(text):
 
     print("\n\nTotal count of words \t\t\t\t =\t ", num_of_words)
     print(
-        "Number of sentences containing entered word =\t ",
+        "Number of sentences containing entered word \t =\t\t",
         num_of_sentences,
         '\n\n')
 
@@ -322,7 +324,6 @@ if __name__ == "__main__":
     try:
         file = open(sys.argv[1], "r")
         text = file.read()  # type(text) = str)
-        # print(text)
         file.close()
     except BaseException:
         print("File not found!!")
