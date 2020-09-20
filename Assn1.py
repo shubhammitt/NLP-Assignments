@@ -6,6 +6,7 @@ from word2number import w2n
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
+
 def break_text_into_sentences(text):
     '''
     Args:
@@ -33,7 +34,7 @@ def break_sentence_into_words(sentence):
     '''
     words = []
     probable_words = word_tokenize(sentence)
-    lemmatizer = WordNetLemmatizer() 
+    lemmatizer = WordNetLemmatizer()
 
     for word in probable_words:
         w = lemmatizer.lemmatize(word)
@@ -163,7 +164,10 @@ def Q_4(text):
     word = word.lower()
     word = word_to_num(word)
 
-    print("\nWord which will be searched in file (case-insensitive) \t=\t", word, '\n')
+    print(
+        "\nWord which will be searched in file (case-insensitive) \t=\t",
+        word,
+        '\n')
 
     for sentence in sentences:
         words = break_sentence_into_words(sentence)
@@ -317,7 +321,7 @@ def Q_9(text):
 
 if __name__ == "__main__":
 
-    if(len(sys.argv) != 2):
+    if len(sys.argv) != 2:
         print("Usage : python3 Assn1.py <File_Path>")
         sys.exit()
 
