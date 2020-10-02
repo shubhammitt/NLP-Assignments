@@ -129,7 +129,7 @@ def calculate_transmission_matrix(train_data):
             transmission_matrix[tag_1][tag_2] += 1
 
     for tag_1 in transmission_matrix:
-        total = sum(transmission_matrix[tag_1].values())
+        total = frequency_of_tags[tag_1] + len(frequency_of_tags)
         for tag_2 in transmission_matrix[tag_1]:
             transmission_matrix[tag_1][tag_2] = log(
                 transmission_matrix[tag_1][tag_2] / total)
@@ -148,7 +148,7 @@ def viterbi(sentence):
             viterbi[i][1] = [emission_matrix[tag][word], (i, BOS)]
         else:
             viterbi[i][1] = [
-                1 / (len(vocabulary) + frequency_of_tags[tag]), (i, BOS)]
+                log(1 / (len(vocabulary) + frequency_of_tags[tag])), (i, BOS)]
 
         viterbi[i][1][0] += transmission_matrix[BOS][tag]
 
@@ -165,26 +165,25 @@ def viterbi(sentence):
             if word in emission_matrix[tag_2]:
                 c = c + emission_matrix[tag_2][word]
             else:
-                c = c + (1 / (len(vocabulary) + frequency_of_tags[tag_2]))
+                c = c + log((1 / (len(vocabulary) + frequency_of_tags[tag_2])))
 
             viterbi[i][k] = [c, t]
 
     m = 0
     t = EOS
     ans = []
-    for i in range(1, number_of_tags):
-        if viterbi[m][-1][0] < viterbi[i][-1][0]:
+    for i in range(number_of_tags):
+        if viterbi[m][-1][0] < viterbi[i][-1][0] + 1e-6:
             m = i
             t = viterbi[i][-1][1]
 
     idx = number_of_words - 1
     while t[1] != BOS:
         ans.append(t[1])
-        print(t[0])
         idx -= 1
         t = viterbi[t[0]][idx][1]
     ans = ans[::-1]
-    print(ans, '\n\n', sentence)
+    return ans
 
 
 if __name__ == '__main__':
@@ -203,7 +202,18 @@ if __name__ == '__main__':
     preprocessing(train_data)
     calculate_emmission_matrix(train_data)
     calculate_transmission_matrix(train_data)
-    viterbi(train_data[0])
+    viterbi(test_data[-1])
+    correct = wrong = 0
+    for i in train_data:
+    	predicted = viterbi(i)
+    	for j in range(1, len(i) - 1):
+    		if i[j][1] == predicted[j - 1]:
+    			correct += 1
+    		else:
+    			wrong += 1
+    	if correct % 100 == 0:
+    		print(correct, wrong)
+    print(correct, wrong, correct / (correct  + wrong))
 
     # c = 0
     # for tag in transmission_matrix:
