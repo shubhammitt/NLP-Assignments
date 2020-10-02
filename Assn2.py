@@ -15,7 +15,7 @@ word_tag_separator = '_'
 BOS = "#"  # Beggining of sentence
 EOS = "##"  # End of Sentence
 OOV = "###"  # Out of vocabulary
-SEED = 23
+SEED = 93383838
 emission_matrix = {}  # 2-D dictionary
 transmission_matrix = {}  # 2-D dictionary
 frequency_of_tags = {}
@@ -43,8 +43,8 @@ def get_sentences_from_text(dataset):
 def split_dataset_into_3_parts(sentences):
     '''
     '''
-    # random.seed(SEED)
-    # random.shuffle(sentences)
+    random.seed(SEED)
+    random.shuffle(sentences)
     number_of_sentences = len(sentences)
     split = number_of_sentences // 3
     dataset_1 = sentences[: split]
@@ -66,14 +66,14 @@ def separate_tag_from_word(sentences):
             try:
                 idx = word_tag.rindex(word_tag_separator)
                 word = word_tag[: idx]
-                tag = word_tag[idx + 1:][: 2]
+                tag = word_tag[idx + 1:][:2]
             except BaseException:
                 word = word_tag
                 tag = OOV
 
             # Normalization on word
             word = word.lower()
-            sentence.append([word, tag])
+            sentence.append((word, tag))
 
         sentences[i] = sentence
     return sentences
@@ -138,30 +138,30 @@ def calculate_transmission_matrix(train_data):
 def viterbi(sentence):
     number_of_tags = len(frequency_of_tags)
     number_of_words = len(sentence)
-    viterbi = [[[] for j in range(number_of_words)]
-               for i in range(number_of_tags)]
+    viterbi = [ [0] * number_of_words for i in range(number_of_tags)]
+    tags = list(frequency_of_tags.keys())
 
     # Base Case for 1st word
-    for i, tag in enumerate(frequency_of_tags):
+    for i, tag in enumerate(tags):
         word = sentence[1][0]
         if word in emission_matrix[tag]:
-            viterbi[i][1] = [emission_matrix[tag][word], (i, BOS)]
+            viterbi[i][1] = [emission_matrix[tag][word], i]
         else:
             viterbi[i][1] = [
-                log(1 / (len(vocabulary) + frequency_of_tags[tag])), (i, BOS)]
+                log(1 / (len(vocabulary) + frequency_of_tags[tag])), i]
 
         viterbi[i][1][0] += transmission_matrix[BOS][tag]
 
     for k in range(2, number_of_words):
         word = sentence[k][0]
-        for i, tag_2 in enumerate(frequency_of_tags):
-            c = -1 * 10**15
+        for i, tag_2 in enumerate(tags):
+            c = -10**15
             t = ""
-            for j, tag_1 in enumerate(frequency_of_tags):
+            for j, tag_1 in enumerate(tags):
                 z = transmission_matrix[tag_1][tag_2] + viterbi[j][k - 1][0]
                 if z > c:
                     c = z
-                    t = (j, tag_1)
+                    t = j
             if word in emission_matrix[tag_2]:
                 c = c + emission_matrix[tag_2][word]
             else:
@@ -170,21 +170,17 @@ def viterbi(sentence):
             viterbi[i][k] = [c, t]
 
     m = 0
-    t = EOS
     ans = []
     for i in range(number_of_tags):
-        if viterbi[m][-1][0] < viterbi[i][-1][0] + 1e-6:
+        if viterbi[m][-1][0] < viterbi[i][-1][0] :
             m = i
-            t = viterbi[i][-1][1]
 
-    idx = number_of_words - 1
-    while t[1] != BOS:
-        ans.append(t[1])
-        idx -= 1
-        t = viterbi[t[0]][idx][1]
+    for i in range(number_of_words - 1, 1, -1):
+    	ans.append(tags[viterbi[m][i][1]])
+    	m = viterbi[m][i][1]
+
     ans = ans[::-1]
     return ans
-
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
@@ -202,7 +198,7 @@ if __name__ == '__main__':
     preprocessing(train_data)
     calculate_emmission_matrix(train_data)
     calculate_transmission_matrix(train_data)
-    viterbi(test_data[-1])
+
     correct = wrong = 0
     for i in train_data:
     	predicted = viterbi(i)
@@ -212,12 +208,5 @@ if __name__ == '__main__':
     		else:
     			wrong += 1
     	if correct % 100 == 0:
-    		print(correct, wrong)
+            print(correct, wrong, correct / (correct  + wrong))
     print(correct, wrong, correct / (correct  + wrong))
-
-    # c = 0
-    # for tag in transmission_matrix:
-    #     print(tag, transmission_matrix[tag], '\n\n\n')
-    #     c += 1
-    #     if c > 2:
-    #         break
