@@ -1,6 +1,7 @@
 
 import sys
-import random,multiprocessing
+import random
+import multiprocessing
 from math import log
 from nltk.tokenize import word_tokenize
 
@@ -16,11 +17,14 @@ vocabulary = {}
 want_parallelism = 1
 K1 = 40
 K2 = 50
+
+
 def get_dataset(file_name):
     f = open(file_name, 'r')
     dataset = f.read()
     f.close()
     return dataset
+
 
 def get_sentences_from_text(dataset):
     '''
@@ -34,8 +38,8 @@ def get_sentences_from_text(dataset):
     number_of_sentences = len(sentences_in_text)
 
     for i in range(number_of_sentences):
-        sentences_in_text[i] = BOS + word_tag_separator + BOS + " " +BOS + word_tag_separator + BOS + " " + \
-            sentences_in_text[i] + " " + EOS + word_tag_separator + EOS+ " " + EOS + word_tag_separator + EOS
+        sentences_in_text[i] = BOS + word_tag_separator + BOS + " " + BOS + word_tag_separator + BOS + " " + \
+            sentences_in_text[i] + " " + EOS + word_tag_separator + EOS + " " + EOS + word_tag_separator + EOS
 
     return sentences_in_text
 
@@ -47,7 +51,7 @@ def split_dataset_into_3_parts(sentences):
     random.shuffle(sentences)
     number_of_sentences = len(sentences)
     split = int(number_of_sentences * 0.9)
-    return sentences[:split], sentences[split :]
+    return sentences[:split], sentences[split:]
 
 
 def separate_tag_from_word(sentences):
@@ -70,6 +74,7 @@ def separate_tag_from_word(sentences):
         sentences[i] = sentence
     return sentences
 
+
 def preprocessing(train_data):
     global frequency_of_tags, vocabulary
     frequency_of_tags = {OOV: 0}
@@ -88,6 +93,7 @@ def preprocessing(train_data):
             if tag not in frequency_of_tags:
                 frequency_of_tags[tag] = 0
             frequency_of_tags[tag] += 1
+
 
 def calculate_emmission_matrix(train_data):
 
@@ -126,7 +132,8 @@ def calculate_transmission_matrix(train_data):
 
     for tag_1 in transmission_matrix:
         for tag_2 in transmission_matrix[tag_1]:
-            total = sum(transmission_matrix[tag_1][tag_2].values()) + K2 * len(frequency_of_tags)
+            total = sum(
+                transmission_matrix[tag_1][tag_2].values()) + K2 * len(frequency_of_tags)
             for tag_3 in transmission_matrix[tag_1][tag_2]:
                 transmission_matrix[tag_1][tag_2][tag_3] = log(
                     transmission_matrix[tag_1][tag_2][tag_3] / total)
@@ -166,8 +173,6 @@ def viterbi(sentence):
         if viterbi[i][2] == 0:
             viterbi[i][2] = [-10**15, i]
 
-
-
     for k in range(3, number_of_words):
         word = sentence[k][0]
         for tag_2 in tags:
@@ -176,14 +181,16 @@ def viterbi(sentence):
                 c = -10**15
                 t = ""
                 for j, tag_1 in enumerate(tags):
-                    z = transmission_matrix[tag_1][tag_2][tag_3] + viterbi[tag1_tag2[tag_1][tag_2]][k - 1][0]
+                    z = transmission_matrix[tag_1][tag_2][tag_3] + \
+                        viterbi[tag1_tag2[tag_1][tag_2]][k - 1][0]
                     if z > c:
                         c = z
                         t = tag1_tag2[tag_1][tag_2]
                 if word in emission_matrix[tag_3]:
                     c = c + emission_matrix[tag_3][word]
                 else:
-                    c = c + log((1 / (K1 * len(vocabulary) + frequency_of_tags[tag_3])))
+                    c = c + \
+                        log((1 / (K1 * len(vocabulary) + frequency_of_tags[tag_3])))
                 viterbi[i][k] = [c, t]
 
     m = 0
@@ -198,6 +205,7 @@ def viterbi(sentence):
     ans = ans[::-1]
     return ans
 
+
 def predict_parallely(test_data):
     correct = wrong = 0
     for sentence in test_data:
@@ -209,6 +217,7 @@ def predict_parallely(test_data):
                 wrong += 1
     return [correct, wrong]
 
+
 def predict(sentence):
     correct = wrong = 0
     predicted = viterbi(sentence)
@@ -218,6 +227,7 @@ def predict(sentence):
         else:
             wrong += 1
     return [correct, wrong]
+
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
@@ -232,26 +242,27 @@ if __name__ == '__main__':
     preprocessing(train_data)
     calculate_transmission_matrix(train_data)
     calculate_emmission_matrix(train_data)
-    correct = wrong = 0
-    if want_parallelism:
-            pool = multiprocessing.Pool(processes=8) 
-            start = 0
-            n = len(test_data[:200]) 
-            split = n // 8
-            x = []
-            for i in range(split, n, split):
-                x.append(test_data[start:i])
-                start = i
 
-            outputs = pool.map(predict_parallely, x) 
-            pool.terminate()
-            for i in outputs:
-                correct += i[0]
-                wrong += i[1]
+    correct = wrong = 0
+    
+    if want_parallelism:
+        pool = multiprocessing.Pool(processes=8)
+        start = 0
+        n = len(test_data[:500])
+        split = n // 8
+        x = []
+        for i in range(split, n, split):
+            x.append(test_data[start:i])
+            start = i
+
+        outputs = pool.map(predict_parallely, x)
+        pool.terminate()
+        for i in outputs:
+            correct += i[0]
+            wrong += i[1]
     else:
         for sentence in test_data[:50]:
             x = predict(sentence)
             correct += x[0]
             wrong += x[1]
-    print(correct, wrong, correct/(correct + wrong))
-        
+    print(correct, wrong, correct / (correct + wrong))
