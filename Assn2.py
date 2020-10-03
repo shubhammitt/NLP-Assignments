@@ -1,26 +1,37 @@
 '''
-	Implementing HMM using Viterbi Algo.
-	Steps:
-		Split the text data into sentences
-		add word boundary '###_###' at front and end of every sentence
-		split the data into 3 parts for cross fold validation
-		split word_tag pair
+    Implementing HMM using Viterbi Algo.
+    Steps:
+        Split the text data into sentences
+        add word boundary '###_###' at front and end of every sentence
+        split the data into 3 parts for cross fold validation
+        split word_tag pair
 '''
 
 import sys
 import random
 from math import log
-
+import multiprocessing 
+import concurrent.futures
+from nltk.tokenize import word_tokenize
+import threading 
 word_tag_separator = '_'
-BOS = "#"  # Beggining of sentence
-EOS = "##"  # End of Sentence
-OOV = "###"  # Out of vocabulary
-SEED = 93383838
+BOS = "##"  # Beggining of sentence
+EOS = "###"  # End of Sentence
+OOV = "####"  # Out of vocabulary
+SEED = 9322238373737383837
 emission_matrix = {}  # 2-D dictionary
 transmission_matrix = {}  # 2-D dictionary
 frequency_of_tags = {}
 vocabulary = {}
+K1 = 40
+K2 = 50
 
+
+def get_dataset(file_name):
+    f = open(file_name, 'r')
+    dataset = f.read()
+    f.close()
+    return dataset
 
 def get_sentences_from_text(dataset):
     '''
@@ -70,12 +81,12 @@ def separate_tag_from_word(sentences):
             except BaseException:
                 word = word_tag
                 tag = OOV
-
-            # Normalization on word
             word = word.lower()
+
             sentence.append((word, tag))
 
         sentences[i] = sentence
+
     return sentences
 
 
@@ -86,11 +97,14 @@ def preprocessing(train_data):
 
     for sentence in train_data:
         for word_tag in sentence:
+
             tag = word_tag[1]
             word = word_tag[0]
+
             if word not in vocabulary:
                 vocabulary[word] = 0
             vocabulary[word] += 1
+
             if tag not in frequency_of_tags:
                 frequency_of_tags[tag] = 0
             frequency_of_tags[tag] += 1
@@ -107,20 +121,20 @@ def calculate_emmission_matrix(train_data):
             tag = word_tag[1]
 
             if word not in emission_matrix[tag]:
-                emission_matrix[tag][word] = 1
+                emission_matrix[tag][word] = K1
 
             emission_matrix[tag][word] += 1
     for tag in emission_matrix:
         for word in emission_matrix[tag]:
-            emission_matrix[tag][word] = log(
-                emission_matrix[tag][word] / (frequency_of_tags[tag] + len(vocabulary)))  # laplace smoothing
+            emission_matrix[tag][word] = log(emission_matrix[tag][word] / (
+                frequency_of_tags[tag] + K1 * len(vocabulary)))  # laplace smoothing
 
 
 def calculate_transmission_matrix(train_data):
     for tag_1 in frequency_of_tags:
         transmission_matrix[tag_1] = {}
         for tag_2 in frequency_of_tags:
-            transmission_matrix[tag_1][tag_2] = 1
+            transmission_matrix[tag_1][tag_2] = K2
 
     for sentence in train_data:
         for i in range(1, len(sentence)):
@@ -129,7 +143,7 @@ def calculate_transmission_matrix(train_data):
             transmission_matrix[tag_1][tag_2] += 1
 
     for tag_1 in transmission_matrix:
-        total = frequency_of_tags[tag_1] + len(frequency_of_tags)
+        total = frequency_of_tags[tag_1] + K2 * len(frequency_of_tags)
         for tag_2 in transmission_matrix[tag_1]:
             transmission_matrix[tag_1][tag_2] = log(
                 transmission_matrix[tag_1][tag_2] / total)
@@ -138,7 +152,7 @@ def calculate_transmission_matrix(train_data):
 def viterbi(sentence):
     number_of_tags = len(frequency_of_tags)
     number_of_words = len(sentence)
-    viterbi = [ [0] * number_of_words for i in range(number_of_tags)]
+    viterbi = [[0] * number_of_words for i in range(number_of_tags)]
     tags = list(frequency_of_tags.keys())
 
     # Base Case for 1st word
@@ -148,7 +162,7 @@ def viterbi(sentence):
             viterbi[i][1] = [emission_matrix[tag][word], i]
         else:
             viterbi[i][1] = [
-                log(1 / (len(vocabulary) + frequency_of_tags[tag])), i]
+                log(1 / (K1 * len(vocabulary) + frequency_of_tags[tag])), i]
 
         viterbi[i][1][0] += transmission_matrix[BOS][tag]
 
@@ -165,48 +179,87 @@ def viterbi(sentence):
             if word in emission_matrix[tag_2]:
                 c = c + emission_matrix[tag_2][word]
             else:
-                c = c + log((1 / (len(vocabulary) + frequency_of_tags[tag_2])))
+                c = c + \
+                    log((1 / (K1 * len(vocabulary) + frequency_of_tags[tag_2])))
 
             viterbi[i][k] = [c, t]
 
     m = 0
     ans = []
     for i in range(number_of_tags):
-        if viterbi[m][-1][0] < viterbi[i][-1][0] :
+        if viterbi[m][-1][0] < viterbi[i][-1][0]:
             m = i
 
     for i in range(number_of_words - 1, 1, -1):
-    	ans.append(tags[viterbi[m][i][1]])
-    	m = viterbi[m][i][1]
+        ans.append(tags[viterbi[m][i][1]])
+        m = viterbi[m][i][1]
 
     ans = ans[::-1]
     return ans
+
+def predict_parallely(test_data):
+	correct = wrong = 0
+	for sentence in test_data:
+	    predicted = viterbi(sentence)
+	    for j in range(1, len(sentence) - 1):
+	        if sentence[j][1] == predicted[j - 1]:
+	            correct += 1
+	        else:
+	            wrong += 1
+	return [correct, wrong]
+
+def predict(sentence):
+    correct = wrong = 0
+    predicted = viterbi(sentence)
+    for j in range(1, len(sentence) - 1):
+        if sentence[j][1] == predicted[j - 1]:
+            correct += 1
+        else:
+            wrong += 1
+    return [correct, wrong]
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print("Usage : python3 Assn2.py <file_name>")
         sys.exit()
 
-    f = open(sys.argv[1], 'r')
-    dataset = f.read()
-    f.close()
-
+    dataset = get_dataset(sys.argv[1])
     sentences = get_sentences_from_text(dataset)
     sentences = separate_tag_from_word(sentences)
     dataset = split_dataset_into_3_parts(sentences)
-    train_data, test_data = make_train_and_test_data(dataset, 0, 1, 2)
-    preprocessing(train_data)
-    calculate_emmission_matrix(train_data)
-    calculate_transmission_matrix(train_data)
 
-    correct = wrong = 0
-    for i in train_data:
-    	predicted = viterbi(i)
-    	for j in range(1, len(i) - 1):
-    		if i[j][1] == predicted[j - 1]:
-    			correct += 1
-    		else:
-    			wrong += 1
-    	if correct % 100 == 0:
-            print(correct, wrong, correct / (correct  + wrong))
-    print(correct, wrong, correct / (correct  + wrong))
+    for i in range(3):
+        print(i)
+        p = [0, 1, 2]
+        p.remove(i)
+        train_data, test_data = make_train_and_test_data(
+            dataset, p[0], p[1], i)
+        preprocessing(train_data)
+        calculate_emmission_matrix(train_data)
+        calculate_transmission_matrix(train_data)
+        correct = wrong = 0
+        want_parallelism = 1
+        if want_parallelism:
+	        pool = multiprocessing.Pool()
+	        pool = multiprocessing.Pool(processes=8) 
+	        start = 0
+	        n = len(test_data) 
+	        split = n // 8
+	        x = []
+	        for i in range(split, n, split):
+	        	x.append(test_data[start:i])
+	        	start = i
+
+	        outputs = pool.map(predict_parallely, x) 
+	        pool.terminate()
+	        for i in outputs:
+	        	correct += i[0]
+	        	wrong += i[1]
+        else:
+        	for sentence in test_data[:100]:
+        		x = predict(sentence)
+        		correct += x[0]
+        		wrong += x[1]
+
+
+        print(correct, wrong, correct / (correct + wrong), K1, K2)

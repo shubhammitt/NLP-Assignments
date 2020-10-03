@@ -51,14 +51,14 @@ def statistics():
 	words_with_more_tags = 0
 
 	for i in all_tags:
-		if "+" in i:
-			print(i, all_tags[i])
+		words_with_more_tags+=1
+		print(i, all_tags[i])
 
 	# for i in vocabulary:
 	# 	if len(vocabulary[i]) > 1:
 	# 		words_with_more_tags += 1
 	# 		print(i, vocabulary[i])
-	# print("Words with more tags \t\t:", words_with_more_tags)
+	print("Words with more tags \t\t:", words_with_more_tags)
 
 sentences_in_text = get_sentences_from_text("Brown_train.txt")
 for sentence in sentences_in_text:
