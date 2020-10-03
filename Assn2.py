@@ -25,7 +25,7 @@ frequency_of_tags = {}
 vocabulary = {}
 K1 = 40
 K2 = 50
-
+want_parallelism = 1
 
 def get_dataset(file_name):
     f = open(file_name, 'r')
@@ -238,9 +238,7 @@ if __name__ == '__main__':
         calculate_emmission_matrix(train_data)
         calculate_transmission_matrix(train_data)
         correct = wrong = 0
-        want_parallelism = 1
         if want_parallelism:
-	        pool = multiprocessing.Pool()
 	        pool = multiprocessing.Pool(processes=8) 
 	        start = 0
 	        n = len(test_data) 
@@ -256,10 +254,9 @@ if __name__ == '__main__':
 	        	correct += i[0]
 	        	wrong += i[1]
         else:
-        	for sentence in test_data[:100]:
+        	for sentence in test_data:
         		x = predict(sentence)
         		correct += x[0]
         		wrong += x[1]
-
 
         print(correct, wrong, correct / (correct + wrong), K1, K2)
