@@ -14,11 +14,11 @@ transmission_matrix = {}  # 2-D dictionary
 frequency_of_tags = {}
 vocabulary = {}
 want_parallelism = 1
-num_of_process = 4
+num_of_process = 5
 K1 = 50
 K2 = 40
 viterbi = []
-assumed_max_length_sent = 100
+assumed_max_length_sent = 500
 number_of_tags = 0
 number_of_tags1_tag2 = 0
 tag1_tag2 = {}
@@ -260,7 +260,7 @@ if __name__ == '__main__':
 
     pool = multiprocessing.Pool(processes=num_of_process)
     start = 0
-    n = len(test_data[:100])
+    n = len(test_data)
     split = n // num_of_process
     x = []
     for i in range(split, n + 1, split):
