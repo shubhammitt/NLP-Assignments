@@ -15,7 +15,7 @@ size_of_vocabulary = 0
 K1 = 40
 K2 = 50
 want_parallelism = 1
-num_process = 4
+num_process = 5
 number_of_tags = 0
 test_ID = 0
 assumed_max_length_sent = 100
@@ -268,7 +268,7 @@ if __name__ == '__main__':
         if want_parallelism:
             pool = multiprocessing.Pool(processes=num_process)
             start = 0
-            n = len(test_data[:1000])
+            n = len(test_data)
             split = n // num_process
             x = []
             for i in range(split, n + 1, split):
