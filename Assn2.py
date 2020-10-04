@@ -1,12 +1,3 @@
-'''
-    Implementing HMM using Viterbi Algo.
-    Steps:
-        Split the text data into sentences
-        add word boundary '###_###' at front and end of every sentence
-        split the data into 3 parts for cross fold validation
-        split word_tag pair
-'''
-
 import sys
 import random
 from math import log
@@ -16,16 +7,22 @@ word_tag_separator = '_'
 BOS = "#"  # Beggining of sentence
 EOS = "@"  # End of Sentence
 OOV = "^"  # Out of vocabulary
-SEED = 9322238373737383837
+SEED = 12332258
 emission_matrix = {}  # 2-D dictionary
 transmission_matrix = {}  # 2-D dictionary
 frequency_of_tags = {}
 size_of_vocabulary = 0
 K1 = 40
 K2 = 50
-want_parallelism = 0
+want_parallelism = 1
+num_process = 4
 number_of_tags = 0
+test_ID = 0
 assumed_max_length_sent = 100
+model_accuracy = []
+model_precision = []
+model_recall = []
+model_f1 = []
 
 def get_dataset(file_name):
     f = open(file_name, 'r')
@@ -130,7 +127,8 @@ def calculate_emmission_matrix(train_data):
                 emission_matrix[tag][word] = K1
 
             emission_matrix[tag][word] += 1
-    for tag in emission_matrix:
+
+    for tag in frequency_of_tags:
         for word in emission_matrix[tag]:
             emission_matrix[tag][word] = log(emission_matrix[tag][word] / (
                 frequency_of_tags[tag] + K1 * size_of_vocabulary))  # laplace smoothing
@@ -214,15 +212,16 @@ def viterbi_algo(sentence):
 
 
 def predict_parallely(test_data):
-    correct = wrong = 0
+    ans_to_return = [0, 0]
     for sentence in test_data:
         predicted = viterbi_algo(sentence)
+        ans_to_return.append((sentence[1:-1], predicted))
         for j in range(1, len(sentence) - 1):
             if sentence[j][1] == predicted[j - 1]:
-                correct += 1
+                ans_to_return[0] += 1
             else:
-                wrong += 1
-    return (correct, wrong)
+                ans_to_return[1] += 1
+    return ans_to_return
 
 
 def predict(sentence):
@@ -233,7 +232,7 @@ def predict(sentence):
             correct += 1
         else:
             wrong += 1
-    return (correct, wrong)
+    return [correct, wrong, (sentence[1:-1], predicted)]
 
 
 if __name__ == '__main__':
@@ -247,7 +246,8 @@ if __name__ == '__main__':
     dataset = split_dataset_into_3_parts(sentences)
 
     for i in range(3):
-        print(i)
+        test_ID = i
+        print("Test ID = ", test_ID)
         p = [0, 1, 2]
         p.remove(i)
         train_data, test_data = make_train_and_test_data(
@@ -255,14 +255,21 @@ if __name__ == '__main__':
         preprocessing(train_data)
         calculate_emmission_matrix(train_data)
         calculate_transmission_matrix(train_data)
+        confusion_matrix = {}
+        for tag_1 in tags:
+            confusion_matrix[tag_1] = {}
+            for tag_2 in tags:
+                confusion_matrix[tag_1][tag_2] = 0
+
+
         correct = wrong = 0
         if want_parallelism:
-            pool = multiprocessing.Pool(processes=8)
+            pool = multiprocessing.Pool(processes=num_process)
             start = 0
-            n = len(test_data)
-            split = n // 8
+            n = len(test_data[:1000])
+            split = n // num_process
             x = []
-            for i in range(split, n, split):
+            for i in range(split, n + 1, split):
                 x.append(test_data[start:i])
                 start = i
 
@@ -271,11 +278,122 @@ if __name__ == '__main__':
             for i in outputs:
                 correct += i[0]
                 wrong += i[1]
+                for j in range(2, len(i)):
+                    for l in range(len(i[j][0])):
+                        confusion_matrix[i[j][0][l][1]][i[j][1][l]] += 1
             print(correct, wrong, correct / (correct + wrong), K1, K2)
         else:
-            for sentence in test_data:
+            for sentence in test_data[:1000]:
                 x = predict(sentence)
                 correct += x[0]
                 wrong += x[1]
+                for l in range(len(x[2][0])):
+                    confusion_matrix[ x[2][0][l][1] ][x[2][1][l] ] += 1
 
             print(correct, wrong, correct / (correct + wrong), K1, K2)
+
+
+
+
+        # print("-------------------------------------------------------------Confusion Matrix-------------------------------------------------------------\n")
+        for tag_1 in tags:
+            for tag_2 in tags:
+                if tag_1 != BOS and tag_1 != EOS and tag_2 != BOS and tag_2 != EOS:
+                    print(tag_1, tag_2, confusion_matrix[tag_1][tag_2])
+
+
+        # print("-------------------------------------------------------------True Positives----------------------------------------------------------------\n")
+        true_positives = {}
+        for tag in tags:
+            if tag != BOS and tag != EOS:
+                true_positives[tag] = confusion_matrix[tag][tag]
+                # print(tag, true_positives[tag])
+
+        # print("-------------------------------------------------------------False Positives----------------------------------------------------------------\n")
+        false_positives = {}
+        for tag in tags:
+            if tag != BOS and tag != EOS:
+                false_positives[tag] = -true_positives[tag]
+                for tag_1 in tags:
+                    if tag_1 != BOS and tag_1 != EOS:
+                        false_positives[tag] += confusion_matrix[tag_1][tag]
+                # print(tag, false_positives[tag])
+
+        # print("-------------------------------------------------------------False Negatives----------------------------------------------------------------\n")
+        false_negatives = {}
+        for tag in tags:
+            if tag != BOS and tag != EOS:
+                false_negatives[tag] = -true_positives[tag]
+                for tag_1 in tags:
+                    if tag_1 != BOS and tag_1 != EOS:
+                        false_negatives[tag] += confusion_matrix[tag][tag_1]
+                # print(tag, false_negatives[tag])
+
+        accuracy = {}
+        precision = {}
+        recall = {}
+        f1_score = {}
+        print("Test ID = ", test_ID)
+        print("----------------------------------------------------------------------TAGWISE----------------------------------------------------------------------")
+        for tag in tags:
+            if tag != BOS and tag != EOS:
+                if true_positives[tag] + false_negatives[tag] + false_positives[tag] != 0:
+                    accuracy[tag] = true_positives[tag] / (true_positives[tag] + false_negatives[tag] + false_positives[tag])
+                else:
+                    accuracy[tag] = 0
+
+                if true_positives[tag] + false_positives[tag] != 0:
+                    precision[tag] = true_positives[tag] / (true_positives[tag] + false_positives[tag])
+                else:
+                    precision[tag] = 0
+                if true_positives[tag] + false_negatives[tag] != 0:
+                    recall[tag] = true_positives[tag] / (true_positives[tag] + false_negatives[tag])
+                else:
+                    recall[tag] = 0
+                if precision[tag] + recall[tag] != 0:
+
+                    f1_score[tag] = 2 * precision[tag] * recall[tag] / (precision[tag] + recall[tag])
+                else:
+                    f1_score[tag] = 0
+
+                print("Tag = ", tag, "\tAccuracy = ",accuracy[tag], "\tPrecision = ", precision[tag], "\tRecall = ", recall[tag], "\tF1- score = ", f1_score[tag])
+
+        print("----------------------------------------------------------------------OverAll----------------------------------------------------------------------")
+
+
+        tp = sum(true_positives.values())
+        fp = sum(false_positives.values())
+        fn = sum(false_negatives.values())
+        tn = 0
+        full_accuracy = 0
+        full_precision = 0
+        full_recall = 0
+        full_f1_macro = 0
+
+        if tp  + fn != 0:
+            full_accuracy = tp / (tp + fn)
+
+        if tp + fp != 0:
+            full_precision = tp / (tp + fp)
+
+        if tp + fn != 0:
+            full_recall = tp / (tp + fn)
+
+
+
+        if sum(precision.values()) + sum(recall.values()) != 0:
+            avg_precision = sum(precision.values()) / len(precision)
+            avg_recall = sum(recall.values()) / len(recall)
+            full_f1_macro = 2 * avg_recall * avg_precision / (avg_recall + avg_precision)
+
+        model_f1.append(full_f1_macro)
+        model_recall.append(full_recall)
+        model_precision.append(full_precision)
+        model_accuracy.append(full_accuracy)
+
+        print("Accuracy = ", full_accuracy, "\tPrecision = ", full_precision, "\tRecall = ", full_recall, "\tF1- score = ", full_f1_macro)
+
+    print("Average Model Accuracy = ", sum(model_accuracy)/3)
+    print("Average Model Precision = ", sum(model_precision)/3)
+    print("Average Model Recall = ", sum(model_recall)/3)
+    print("Average Model F1-score = ", sum(model_f1)/3)

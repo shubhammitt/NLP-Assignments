@@ -3,7 +3,6 @@ import sys
 import random
 import multiprocessing
 from math import log
-from nltk.tokenize import word_tokenize
 
 word_tag_separator = '_'
 BOS = "##"  # Beggining of sentence
@@ -15,8 +14,9 @@ transmission_matrix = {}  # 2-D dictionary
 frequency_of_tags = {}
 vocabulary = {}
 want_parallelism = 1
-K1 = 40
-K2 = 50
+num_of_process = 4
+K1 = 50
+K2 = 40
 
 
 def get_dataset(file_name):
@@ -246,12 +246,12 @@ if __name__ == '__main__':
     correct = wrong = 0
     
     if want_parallelism:
-        pool = multiprocessing.Pool(processes=8)
+        pool = multiprocessing.Pool(processes=num_of_process)
         start = 0
-        n = len(test_data[:500])
-        split = n // 8
+        n = len(test_data[:300])
+        split = n // num_of_process
         x = []
-        for i in range(split, n, split):
+        for i in range(split, n + 1, split):
             x.append(test_data[start:i])
             start = i
 
