@@ -23,6 +23,7 @@ model_accuracy = []
 model_precision = []
 model_recall = []
 model_f1 = []
+all_fold_tags = {}
 
 def get_dataset(file_name):
     f = open(file_name, 'r')
@@ -171,7 +172,7 @@ def viterbi_algo(sentence):
 
         try:
             emi_prob = emission_matrix[tag][word]
-        except:
+        except BaseException:
             emi_prob = -log(K1 * size_of_vocabulary + frequency_of_tags[tag])
 
         viterbi[1][i] = (emi_prob + transmission_matrix[BOS][tag], i)
@@ -193,15 +194,17 @@ def viterbi_algo(sentence):
 
             try:
                 max_val += emission_matrix[tag_2][word]
-            except:
-                max_val -= log(K1 * size_of_vocabulary + frequency_of_tags[tag])
+            except BaseException:
+                max_val -= log(K1 * size_of_vocabulary +
+                               frequency_of_tags[tag])
 
             viterbi[k][i] = (max_val, col_idx)
 
     col_idx = 0
     ans = []
     for i in range(number_of_tags):
-        if viterbi[number_of_words - 1][col_idx][0] < viterbi[number_of_words - 1][i][0]:
+        if viterbi[number_of_words -
+                   1][col_idx][0] < viterbi[number_of_words - 1][i][0]:
             col_idx = i
 
     for i in range(number_of_words - 1, 1, -1):
@@ -237,7 +240,7 @@ def predict(sentence):
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print("Usage : python3 Assn2.py <file_name>")
+        print("Usage : python3 bigram.py <file_name>")
         sys.exit()
 
     dataset = get_dataset(sys.argv[1])
@@ -260,7 +263,6 @@ if __name__ == '__main__':
             confusion_matrix[tag_1] = {}
             for tag_2 in tags:
                 confusion_matrix[tag_1][tag_2] = 0
-
 
         correct = wrong = 0
         if want_parallelism:
@@ -288,19 +290,15 @@ if __name__ == '__main__':
                 correct += x[0]
                 wrong += x[1]
                 for l in range(len(x[2][0])):
-                    confusion_matrix[ x[2][0][l][1] ][x[2][1][l] ] += 1
+                    confusion_matrix[x[2][0][l][1]][x[2][1][l]] += 1
 
             print(correct, wrong, correct / (correct + wrong), K1, K2)
 
-
-
-
-        # print("-------------------------------------------------------------Confusion Matrix-------------------------------------------------------------\n")
+        print("-------------------------------------------------------------Confusion Matrix-------------------------------------------------------------\n")
         for tag_1 in tags:
             for tag_2 in tags:
                 if tag_1 != BOS and tag_1 != EOS and tag_2 != BOS and tag_2 != EOS:
                     print(tag_1, tag_2, confusion_matrix[tag_1][tag_2])
-
 
         # print("-------------------------------------------------------------True Positives----------------------------------------------------------------\n")
         true_positives = {}
@@ -334,66 +332,125 @@ if __name__ == '__main__':
         recall = {}
         f1_score = {}
         print("Test ID = ", test_ID)
-        print("----------------------------------------------------------------------TAGWISE----------------------------------------------------------------------")
+        print("\n\n----------------------------------------------------------------------TAGWISE----------------------------------------------------------------------")
+        
+        all_fold_tags[test_ID]  = {}
         for tag in tags:
             if tag != BOS and tag != EOS:
-                if true_positives[tag] + false_negatives[tag] + false_positives[tag] != 0:
-                    accuracy[tag] = true_positives[tag] / (true_positives[tag] + false_negatives[tag] + false_positives[tag])
+                if true_positives[tag] + false_negatives[tag] + \
+                        false_positives[tag] != 0:
+                    accuracy[tag] = true_positives[tag] / \
+                        (true_positives[tag] +
+                         false_negatives[tag] +
+                         false_positives[tag])
                 else:
                     accuracy[tag] = 0
 
                 if true_positives[tag] + false_positives[tag] != 0:
-                    precision[tag] = true_positives[tag] / (true_positives[tag] + false_positives[tag])
+                    precision[tag] = true_positives[tag] / \
+                        (true_positives[tag] + false_positives[tag])
                 else:
                     precision[tag] = 0
                 if true_positives[tag] + false_negatives[tag] != 0:
-                    recall[tag] = true_positives[tag] / (true_positives[tag] + false_negatives[tag])
+                    recall[tag] = true_positives[tag] / \
+                        (true_positives[tag] + false_negatives[tag])
                 else:
                     recall[tag] = 0
                 if precision[tag] + recall[tag] != 0:
 
-                    f1_score[tag] = 2 * precision[tag] * recall[tag] / (precision[tag] + recall[tag])
+                    f1_score[tag] = 2 * precision[tag] * \
+                        recall[tag] / (precision[tag] + recall[tag])
                 else:
                     f1_score[tag] = 0
 
-                print("Tag = ", tag, "\tAccuracy = ",accuracy[tag], "\tPrecision = ", precision[tag], "\tRecall = ", recall[tag], "\tF1- score = ", f1_score[tag])
+                all_fold_tags[test_ID][tag] = [accuracy[tag], precision[tag], recall[tag], f1_score[tag]]
+                print(
+                    "Tag = ",
+                    tag,
+                    "\tAccuracy = ",
+                    accuracy[tag],
+                    "\tPrecision = ",
+                    precision[tag],
+                    "\tRecall = ",
+                    recall[tag],
+                    "\tF1- score = ",
+                    f1_score[tag])
 
-        print("----------------------------------------------------------------------OverAll----------------------------------------------------------------------")
+        print("\n\n------------------------------------------------------------- OverAll ------------------------------------------------------------------")
+        s = 0
+        for tag in true_positives:
+        	s += frequency_of_tags[tag]
 
-
-        tp = sum(true_positives.values())
-        fp = sum(false_positives.values())
-        fn = sum(false_negatives.values())
-        tn = 0
         full_accuracy = 0
         full_precision = 0
         full_recall = 0
         full_f1_macro = 0
-
-        if tp  + fn != 0:
-            full_accuracy = tp / (tp + fn)
-
-        if tp + fp != 0:
-            full_precision = tp / (tp + fp)
-
-        if tp + fn != 0:
-            full_recall = tp / (tp + fn)
-
-
-
-        if sum(precision.values()) + sum(recall.values()) != 0:
-            avg_precision = sum(precision.values()) / len(precision)
-            avg_recall = sum(recall.values()) / len(recall)
-            full_f1_macro = 2 * avg_recall * avg_precision / (avg_recall + avg_precision)
+        for tag in accuracy:
+        	full_accuracy += accuracy[tag] * frequency_of_tags[tag] / s
+        	full_recall += recall[tag] * frequency_of_tags[tag] / s
+        	full_precision += precision[tag] * frequency_of_tags[tag] / s
+        	full_f1_macro += f1_score[tag] * frequency_of_tags[tag] / s
 
         model_f1.append(full_f1_macro)
         model_recall.append(full_recall)
         model_precision.append(full_precision)
         model_accuracy.append(full_accuracy)
 
-        print("Accuracy = ", full_accuracy, "\tPrecision = ", full_precision, "\tRecall = ", full_recall, "\tF1- score = ", full_f1_macro)
+        print(
+            "Accuracy = ",
+            full_accuracy,
+            "\tPrecision = ",
+            full_precision,
+            "\tRecall = ",
+            full_recall,
+            "\tF1- score = ",
+            full_f1_macro)
 
-    print("Average Model Accuracy = ", sum(model_accuracy)/3)
-    print("Average Model Precision = ", sum(model_precision)/3)
-    print("Average Model Recall = ", sum(model_recall)/3)
-    print("Average Model F1-score = ", sum(model_f1)/3)
+    print("\n\n----------------------------------------------------------------- Model Stats -----------------------------------------------------------------")
+    
+    for tag in all_fold_tags[2]:
+    	c = 1
+    	idx = 0
+    	x = all_fold_tags[2][tag][idx]
+    	if tag in all_fold_tags[0]:
+    		x += all_fold_tags[0][tag][idx]
+    		c += 1
+    	if tag in all_fold_tags[1]:
+    		x += all_fold_tags[1][tag][idx]
+    		c += 1
+    	print("Tag = ", tag, "Accuracy = ", x / c, end ='')
+    	c = 1
+    	idx = 1
+    	x = all_fold_tags[2][tag][idx]
+    	if tag in all_fold_tags[0]:
+    		x += all_fold_tags[0][tag][idx]
+    		c += 1
+    	if tag in all_fold_tags[1]:
+    		x += all_fold_tags[1][tag][idx]
+    		c += 1
+    	print("\t\tPrecision = ", x / c, end ='')
+    	c = 1
+    	idx = 2
+    	x = all_fold_tags[2][tag][idx]
+    	if tag in all_fold_tags[0]:
+    		x += all_fold_tags[0][tag][idx]
+    		c += 1
+    	if tag in all_fold_tags[1]:
+    		x += all_fold_tags[1][tag][idx]
+    		c += 1
+    	print("\t\tRecall = ", x / c, end ='')
+    	c = 1
+    	idx = 3
+    	x = all_fold_tags[2][tag][idx]
+    	if tag in all_fold_tags[0]:
+    		x += all_fold_tags[0][tag][idx]
+    		c += 1
+    	if tag in all_fold_tags[1]:
+    		x += all_fold_tags[1][tag][idx]
+    		c += 1
+    	print("\t\tF1-score = ", x / c)
+
+    print("Average Model Accuracy = ", sum(model_accuracy) / 3)
+    print("Average Model Precision = ", sum(model_precision) / 3)
+    print("Average Model Recall = ", sum(model_recall) / 3)
+    print("Average Model F1-score = ", sum(model_f1) / 3)
