@@ -224,7 +224,7 @@ def viterbi_algo(sentence):
     return ans
 
 
-def predict_parallely(test_data):
+def predict_parallelly(test_data):
     ans_to_return = [0, 0]
     for sentence in test_data:
         predicted = viterbi_algo(sentence)
@@ -267,7 +267,7 @@ if __name__ == '__main__':
         x.append(test_data[start:i])
         start = i
 
-    outputs = pool.map(predict_parallely, x)
+    outputs = pool.map(predict_parallelly, x)
     pool.terminate()
     for i in outputs:
         correct += i[0]

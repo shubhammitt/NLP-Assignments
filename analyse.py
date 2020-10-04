@@ -21,11 +21,11 @@ def split_sentence_into_word_tag(sentence):
 def separate_tag_from_word(word_tag):
 	try:
 		idx = word_tag.rindex('_')
+		word = word_tag[ : idx]
+		tag = word_tag[idx + 1 :]
 	except:
-		print(word_tag)
-		return (None, None)
-	word = word_tag[ : idx]
-	tag = word_tag[idx + 1 :]
+		word = word_tag
+		tag = "OOV"
 
 	if word not in vocabulary:
 		vocabulary[word] = {}
@@ -42,23 +42,25 @@ def separate_tag_from_word(word_tag):
 
 def statistics():
 	print("Number of words in vocabulary \t\t:", len(vocabulary))
-	print("Number of tags in vocabulary \t\t:", len(all_tags))
+	print("Number of tags \t\t\t:", len(all_tags))
 	print("Min of sentence \t\t:", min(list_of_len_sentences))
 	print("Max of sentence \t\t:", max(list_of_len_sentences))
 	print("Avg of sentence \t\t:", sum(list_of_len_sentences) / len(list_of_len_sentences))
 	print("Number of tags \t\t:", len(all_tags))
 	print("Total words \t\t:", sum(list_of_len_sentences))
 	words_with_more_tags = 0
-
+	print("-"*60, '\n\n')
+	print("Frequency of tags in dataset:")
 	for i in all_tags:
-		words_with_more_tags+=1
 		print(i, all_tags[i])
 
-	# for i in vocabulary:
-	# 	if len(vocabulary[i]) > 1:
-	# 		words_with_more_tags += 1
-	# 		print(i, vocabulary[i])
-	print("Words with more tags \t\t:", words_with_more_tags)
+	print("-"*60, '\n\n')
+	print("Word with more than 1 tag:")
+	for i in vocabulary:
+		if len(vocabulary[i]) > 1:
+			words_with_more_tags += 1
+			print(i, vocabulary[i])
+	print("Words with more than 1 tag \t\t:", words_with_more_tags)
 
 sentences_in_text = get_sentences_from_text("Brown_train.txt")
 for sentence in sentences_in_text:

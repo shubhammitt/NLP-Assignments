@@ -33,8 +33,6 @@ def get_dataset(file_name):
 
 
 def get_sentences_from_text(dataset):
-    '''
-    '''
     # each newline is considered a sentence
     sentences_in_text = list(dataset.split('\n'))
     sentences_in_text = [
@@ -51,8 +49,6 @@ def get_sentences_from_text(dataset):
 
 
 def split_dataset_into_3_parts(sentences):
-    '''
-    '''
     random.seed(SEED)
     random.shuffle(sentences)
     number_of_sentences = len(sentences)
@@ -77,7 +73,7 @@ def separate_tag_from_word(sentences):
                 idx = word_tag.rindex(word_tag_separator)
                 word = word_tag[: idx]
                 tag = word_tag[idx + 1:][:2]
-            except BaseException:
+            except:
                 word = word_tag
                 tag = OOV
             word = word.lower()
@@ -172,7 +168,7 @@ def viterbi_algo(sentence):
 
         try:
             emi_prob = emission_matrix[tag][word]
-        except BaseException:
+        except:
             emi_prob = -log(K1 * size_of_vocabulary + frequency_of_tags[tag])
 
         viterbi[1][i] = (emi_prob + transmission_matrix[BOS][tag], i)
@@ -194,7 +190,7 @@ def viterbi_algo(sentence):
 
             try:
                 max_val += emission_matrix[tag_2][word]
-            except BaseException:
+            except:
                 max_val -= log(K1 * size_of_vocabulary +
                                frequency_of_tags[tag])
 
