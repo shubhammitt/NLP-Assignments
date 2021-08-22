@@ -1,0 +1,248 @@
+
+
+Q1 : 
+
+Number of Sentences 	:-	  356
+Number of Words 	:-	  5583 
+
+
+
+Q2 : 
+
+Number of Words starting with a vowel 		:-	  1474
+Number of Words starting with a consonant 	:-	  3927 
+
+
+
+Q3 : 
+
+Number of valid mail-IDs =  13 
+
+1.	 blgardne@javelin.sim.es.com
+2.	 monthly_733561501@javelin.sim.es.com
+3.	 monthly_730969501@javelin.sim.es.com
+4.	 green@East.Sun.COM
+5.	 car377@druhi.att.com
+6.	 server@cerritos.edu
+7.	 Tanner@Cerritos.EDU
+8.	 arnie@magnus.acs.ohio-state.edu
+9.	 loki@Physics.McGill.CA
+10.	 rm-reviews@ftp.physics.mcgill.ca
+11.	 rm-reviews@physics.mcgill.ca
+12.	 username@host.subdomain.domain
+13.	 blaine_g@bix.com
+
+
+Q4 : 
+
+Enter a word : 
+Word which will be searched in file (case-insensitive) 	=	 i 
+
+1.	 I mean like I like riding my Yuka-yuka Fudgeo-Jammer      11 but what the heck.
+2.	 I love my BMW!
+3.	 I mean       even Villy Ogle flamed me for that!
+4.	 I guess you had to be there.
+5.	 I wasn't.)
+6.	 I wanted  to live a man's life, [Music slowly builds in background]  riding Nortons and Triumphs through the highest mountain passes  and the deepest valleys,  living the life of a Motorcyclist;  doing donuts and evading the police;  terrorizing old ladies and raping small children;  eating small dogs for tea (and large dogs for dinner).
+7.	 I ride my bike; I eat my lunch; I go to the lavat'ry.
+8.	 I ride real fast, My name is Chuck, It somehow seems to fit.
+9.	 I over-rate the worst bad f*ck, But like a real good sh*t.  Oh, I'm a Denizen and I'm okay!
+10.	 I flame all night and I ride all day.
+11.	 I wear high heels And bright pink shorts,  full leathers and a bra.
+12.	 I wish I rode a Harley,  just like my dear mama.
+13.	 I want!"
+
+Number of sentences which starts with entered word "i"		=		  13 
+
+
+
+Q5 : 
+
+Enter a word : 
+Word which will be searched in file (case-insensitive) 	=	 day 
+
+1.	 Chuck [Sings to the tune of "The Lumberjack Song"]:  I'm a Denizen and I'm okay, I flame all night and I ride all day.
+2.	 [Hell's Angels Echo Chorus, surprisingly heavy on tenors]: He's a Denizen and he's okay, He flames all night and he rides all day.
+3.	 I flame all night and I ride all day.
+4.	 ~Newsgroups: rec.motorcycles ~From: Arnie Skurow <arnie@magnus.acs.ohio-state.edu> ~Subject: A letter from the Motorcycle Heritage Museum ~Date: Mon, 13 Apr 1992 11:04:58 GMT  I received the following letter from Jim Rogers, director of the Museum, the other day.
+
+Number of sentences which ends with entered word "day"		=		  4 
+
+
+
+Q6 : 
+
+Enter a word : 
+Word which will be searched in file (case-insensitive) 	=	 3 
+
+1 times in the sentence --> 
+by John Sloan		DoD #11 The DoD Logo			by Chuck Rogers		DoD #3 The DoD  (this started it all)	by The Denizen of Doom	DoD #1 The DoD Anthem			by Jonathan Quist	DoD #94 Why you have to be killed	by Blaine Gardner	DoD #46 The rec.moto.photo.archive	courtesy of Bruce Tanner DoD #161 Patches? 
+
+
+1 times in the sentence --> 
+They discuss motorcycles and   motorcycling, beverages, cleaning fluids, baklavah, balaclava, caltrops,   helmets, anti-fog shields, spine protectors, aerodynamics, three-angle valve seats, bird hits, deer whistles, good restaurants, racing philosophy,  traffic laws, tickets, corrosion control, personalities, puns, double  entendres, culture, absence of culture, first rides and friendship. 
+
+
+1 times in the sentence --> 
+He who would become the holder of DoD membership #3 thought this was the funniest thing he'd seen in a while (being the sort that is pretty easily amused), so he claimed membership in the Denizens of Doom Motorcycle Club, and started signing his postings with his membership number. 
+
+
+1 times in the sentence --> 
+For example, you can send:  dir [dod] send [dod]bruce_tanner.gif send [dod]dodframe.ps  and you'll get back 5 mail messages; a directory listing, 3 uuencoded parts of bruce_tanner.gif, and the dodframe.ps file in ASCII. 
+
+
+
+
+Total count of words 				 =	  4
+Number of sentences containing entered word 	 =		 4 
+
+
+
+
+Q7 : 
+
+1.	 Xref: cantaloupe.srv.cs.cmu.edu rec.motorcycles:102616 rec.motorcycles.dirt:3539 rec.motorcycles.harley:3023 rec.motorcycles.racing:1903 Path: cantaloupe.srv.cs.cmu.edu!das-news.harvard.edu!ogicse!uwm.edu!cs.utexas.edu!uunet!orca!javelin.sim.es.com!blgardne From: blgardne@javelin.sim.es.com (Dances With Bikers) Newsgroups: rec.motorcycles,rec.motorcycles.dirt,rec.motorcycles.harley,rec.motorcycles.racing Subject: FAQ - What is the DoD?
+2.	 : javelin.DoD.monthly_733561501 Expires: Sun, 30 May 1993 07:05:01 GMT Sender: blgardne@javelin.sim.es.com (Blaine Gardner) Reply-To: blgardne@javelin.sim.es.com Followup-To: rec.motorcycles Organization: Evans & Sutherland Computer Corporation Lines: 849 Supersedes: <DoD.monthly_730969501@javelin.sim.es.com>  This is a periodic posting intended to answer the Frequently Asked Question: What is the DoD?
+3.	 ------------------------------------------------------------------------  Contents: How do I get a DoD number?
+4.	 by Blaine Gardner	DoD #46 DoD "Road Rider" article	by Bruce Tanner		DoD #161 What is the DoD?
+5.	 by John Sloan		DoD #11 The DoD Logo			by Chuck Rogers		DoD #3 The DoD  (this started it all)	by The Denizen of Doom	DoD #1 The DoD Anthem			by Jonathan Quist	DoD #94 Why you have to be killed	by Blaine Gardner	DoD #46 The rec.moto.photo.archive	courtesy of Bruce Tanner DoD #161 Patches?
+6.	 What patches?
+7.	 by Blaine Gardner	DoD #46 Letter from the AMA museum      by Jim Rogers, Director DoD #395 The DoD Rules			by consensus Other rec.moto resources	by various Keepers	DoD #misc The rec.moto.reviews.archive	courtesy of Loki Jorgenson DoD #1210 Updated stats & rides info	by Ed Green (DoD #111) and others  ------------------------------------------------------------------------ 			How do I get a DoD number?
+8.	 If the most Frequently Asked Question in rec.motorcycles is "What is the DoD?
+9.	 So provide some information for the list, will ya?
+10.	 This is one of those questions in the same class as "Why is the sky blue?
+11.	 and "Why do women inevitably tell you that you're such a nice guy just before they dump you?
+12.	 Where will it end?
+13.	 Who knows?
+14.	 Will the DoD start sanctioning races, placing limits on the memory and clock rate of the on-board engine management computers?
+15.	 Will the DoD organize poker runs where each participant collects a hand of hardware and software reference cards?
+16.	 Will the DoD have a rally in which the attendees demand a terminal room and at least a 386-sized UNIX system?
+17.	 | |         )-:                :-(  O     | \___// \\___/ |     T   )-:                :-(         \     \_/     /      O   )-:                :-(  F       \___     ___/           )-:                :-(  L        \ \     / /        L   )-:                :-(  A         \ vvvvv /         I   )-:                :-(  M         | (   ) |         V   )-:                :-(  E         | ^^^^^ |         E   )-:                 :-(  x        \_______/        x   )-:                   :-(  x                       x   )-:                     :-(  x   rec.motorcycles   x   )-:                 :-(          USENET          )-:   ------------------------------------------------------------------------                        The DoD                by the Denizen of Doom    DoD #1   Welcome one and all to the flamingest, most wonderfullest newsgroup of all time: wreck.mudder-disciples or is it reak.mudder-disciples?
+18.	 Muck: I don't mean to preach, Terrible, but lighten up on the BMW      crowd eh?
+19.	 Terrible: Waddya going to do?
+20.	 Call in reinforcements???
+21.	 Let's see      what they say, eh?
+22.	 Terrible: B.T.???
+23.	 Terrible: What does BMW stand for anyway???
+24.	 Terrible: Hey, didn't you drop your BMW???
+25.	 Heritick: Heya Terrible, how's yer front to back bias?
+26.	 Terrible: Not bad, sold yer BMW?
+27.	 Buck: Nice tree Hooter, how'd ya get up there?
+28.	 Muck: What's a carbujector?
+29.	 Dill: Well, where do we race?
+30.	 Muck: Well, what about Mucho Guzlers and Lepurras?
+31.	 Muck: What about a Tridump?
+32.	 Terrible: Isn't that a chewing gum?
+33.	 Muck: Auggggg, Waddda about a Pluck-a-kity?
+34.	 Heritick: Heyya Muck, you tryin' to call up the demon rider himself?
+35.	 Muck: Why??
+36.	 : Wadddoes BMW stand for?
+37.	 : Oh, don't you mean BMW?
+38.	 Does this mean that all of the wreck.mudder-disciples will be riding mini-trikes?
+39.	 Are our arguing heros doomed?
+40.	 Sometime in the far distant past, a hapless newbie asked: "What does DoD stand for?
+41.	 --  Bruce Tanner        (213) 860-2451 x 596    Tanner@Cerritos.EDU Cerritos College    Norwalk, CA             cerritos!tanner  **********************************************************  A couple of comments: Bruce has put quite a bit of effort into this, so why not drop him a note if you find the rec.moto.photo archive useful?
+42.	 ------------------------------------------------------------------------                        Patches?
+43.	 What patches?
+
+Number of questions in given file 	=	 43 
+
+
+
+
+Q8 : 
+
+07:05:04  -->  05 min 04 sec
+07:05:01  -->  05 min 01 sec
+11:04:58  -->  04 min 58 sec
+
+
+
+
+
+Q9 : 
+
+FAQ
+FAQ
+ID
+GMT
+GMT
+VERSION
+AMA
+CA
+COM
+PS
+AMHF
+AMA
+AMA
+MTV
+VHS
+UNIX
+USENET
+BMW
+BMW
+BMW
+BMW
+BMW
+BMW
+BMW
+BMW
+BMW
+WE
+KNOW
+WE
+KNOW
+WE
+KNOW
+WE
+KNOW
+BMW
+BMW
+GOOD
+BMW
+BMW
+BEAT
+ME
+WILHEM
+BMW
+NO
+CDC
+FAQ
+FAQ
+DIR
+SEND
+VMS
+DOD
+ASCII
+EDU
+CA
+AMA
+USENET
+AMA
+GMT
+AMHF
+FAQ
+TXT
+DOD
+LIST
+FAQ
+TXT
+CA
+FTP
+FTP
+NOTE
+NOTE
+PLEASE
+DO
+FTP
+RCR
+NH
+FL
+GPNDG
+SLC
+BIX
+SLC
+BIX
+
+
+
